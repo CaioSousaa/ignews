@@ -13,7 +13,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-icons": "^5.4.0",
-    "sass": "^1.83.4"
+    "sass": "^1.83.4",
+    "stripe": "^17.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
