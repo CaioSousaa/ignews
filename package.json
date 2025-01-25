@@ -17,6 +17,7 @@
     "firebase": "^11.2.0",
     "next": "15.1.5",
     "next-auth": "^4.24.11",
+    "prismic-dom": "^2.2.7",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-icons": "^5.4.0",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@slicemachine/adapter-next": "^0.3.65",
     "@types/node": "^22.10.7",
+    "@types/prismic-dom": "^2.1.4",
     "@types/react": "^19.0.7",
     "eslint": "9.18.0",
     "eslint-config-next": "15.1.5",
