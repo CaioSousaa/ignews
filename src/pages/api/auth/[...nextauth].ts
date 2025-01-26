@@ -1,4 +1,10 @@
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
 
 import GitHubProvider from "next-auth/providers/github";
 import NextAuth from "next-auth";
@@ -20,24 +26,56 @@ export default NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async session({ session }) {
+      const email = session.user?.email;
+      if (!email) return session;
+
+      try {
+        const subscriptionsRef = collection(db, "subscriptions");
+
+        const q = query(
+          subscriptionsRef,
+          where("userEmail", "==", email),
+          where("status", "==", "active")
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          return {
+            ...session,
+            activeSubscription: true,
+          };
+        }
+      } catch (error) {
+        console.error("Erro ao buscar assinatura:", error);
+      }
+
+      return {
+        ...session,
+        activeSubscription: false,
+      };
+    },
+
     async signIn({ user }) {
       const { email } = user;
 
       if (!email) return false;
 
       try {
-        const userRef = doc(db, "users", email);
-        const userDoc = await getDoc(userRef);
+        const subscriptionsRef = collection(db, "subscriptions");
+        const q = query(subscriptionsRef, where("userEmail", "==", email));
+        const querySnapshot = await getDocs(q);
 
-        if (userDoc.exists()) {
-          console.log("Usuário já existe no Firestore");
+        if (!querySnapshot.empty) {
+          console.log("Usuário já possui uma assinatura");
           return true;
         }
 
-        await setDoc(userRef, { email }, { merge: true });
-
+        console.log("Usuário não tem assinatura, mas pode logar");
         return true;
-      } catch {
+      } catch (error) {
+        console.error("Erro ao verificar assinatura:", error);
         return false;
       }
     },
